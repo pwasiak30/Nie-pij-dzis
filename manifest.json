@@ -1,6 +1,6 @@
 {
-  "name": "Nowy Dzień — Tracker Trzeźwości",
-  "short_name": "Nowy Dzień",
+  "name": "Nie pij dziś — Tracker Trzeźwości",
+  "short_name": "Nie pij dziś",
   "description": "Śledź swoją drogę do trzeźwości, buduj nawyki i świętuj kamienie milowe.",
   "start_url": "./index.html",
   "scope": "./",

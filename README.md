@@ -1,4 +1,4 @@
-# Nowy Dzień — Tracker Trzeźwości
+# Nie pij dziś — Tracker Trzeźwości
 
 Apka PWA (Progressive Web App) — instalujesz ją na Androidzie jak zwykłą aplikację,
 działa offline, a wszystkie dane trzymane są **wyłącznie lokalnie na Twoim telefonie**

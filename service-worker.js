@@ -1,7 +1,7 @@
-// Service Worker — "Nowy Dzień"
+// Service Worker — "Nie pij dziś"
 // Podbij numer wersji (CACHE_NAME) za każdym razem, gdy zmienisz pliki aplikacji,
 // żeby telefony pobrały nową wersję zamiast trzymać starą z pamięci podręcznej.
-const CACHE_NAME = "nowy-dzien-v1";
+const CACHE_NAME = "nie-pij-dzis-v5";
 
 const APP_SHELL = [
   "./",

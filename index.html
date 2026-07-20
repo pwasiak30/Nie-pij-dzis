@@ -10,8 +10,8 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Nowy Dzień">
-<title>Nowy Dzień — Tracker Trzeźwości</title>
+<meta name="apple-mobile-web-app-title" content="Nie pij dziś">
+<title>Nie pij dziś — Tracker Trzeźwości</title>
 <style>
 @font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:200 800;font-display:swap;src:url('fonts/Bricolage-latin.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122;}
 @font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:200 800;font-display:swap;src:url('fonts/Bricolage-latinext.woff2') format('woff2');unicode-range:U+0100-024F,U+0300-0301,U+0304,U+0308,U+0329,U+1E00-1EFF;}
@@ -323,6 +323,7 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
             <div class="num" id="dayCount">0</div>
             <div class="unit" id="dayUnit">dni trzeźwości</div>
             <div class="precise" id="preciseTime"></div>
+            <div class="precise" id="totalConv" style="margin-top:2px;opacity:.85;"></div>
           </div>
         </div>
         <div class="milestone-teaser" id="milestoneTeaser"></div>
@@ -334,6 +335,19 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
         <div class="qs"><div class="lbl">⏱️ Odzyskany czas</div><div class="val" id="timeSaved">0 h</div></div>
         <div class="qs"><div class="lbl">🔥 Passa przysięgi</div><div class="val" id="pledgeStreak">0 dni</div></div>
         <div class="qs"><div class="lbl">🏁 Następny cel</div><div class="val" id="nextMilestoneVal">—</div></div>
+      </div>
+
+      <div class="section-title">Myśl dnia</div>
+      <div class="card" id="dailyQuoteCard" style="background:linear-gradient(160deg,#FFF6E5,#FFEFD6);border-color:var(--gold);">
+        <div id="dailyQuoteText" style="font-size:15px;font-style:italic;line-height:1.5;">Dodaj swoje złote myśli w zakładce Więcej → Złote myśli, a codziennie zobaczysz tu jedną z nich.</div>
+        <div id="dailyQuoteSource" style="font-size:12px;color:var(--ink-faint);margin-top:8px;"></div>
+      </div>
+
+      <div class="section-title">Krok na dziś</div>
+      <div class="card" style="background:linear-gradient(160deg,#E8FAF6,#D6F5EE);border-color:var(--teal);">
+        <div style="font-family:var(--font-display);font-weight:800;font-size:13px;color:var(--teal-deep);" id="dailyStepNum"></div>
+        <div style="font-size:14.5px;line-height:1.5;margin-top:4px;" id="dailyStepText"></div>
+        <button class="btn btn-ghost btn-sm" data-goto="steps" style="margin-top:10px;">Zobacz wszystkie kroki ›</button>
       </div>
 
       <div class="section-title">Podsumuj dzisiejszy dzień</div>
@@ -357,6 +371,7 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
 
     <!-- POWODY -->
     <section class="view" id="view-reasons">
+      <button class="btn btn-ghost btn-sm" data-goto="more">‹ Wróć</button>
       <div class="section-title">Dlaczego to robię</div>
       <button class="btn btn-primary btn-block" id="addReasonBtn" style="margin-bottom:14px;">+ Dodaj powód</button>
       <div id="reasonsList"></div>
@@ -426,14 +441,137 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
       </div>
     </section>
 
+    <!-- DZIENNIK GŁODU -->
+    <section class="view" id="view-craving">
+      <div class="section-title">Dziennik głodu</div>
+      <div class="card">
+        <div class="field" style="margin-bottom:8px;"><label>Dzień</label><input type="date" id="cravDate"></div>
+        <button class="btn btn-primary btn-block" id="cravOpenBtn">Otwórz / edytuj wpis dnia</button>
+      </div>
+      <div class="section-title">Ostatnie wpisy</div>
+      <div class="card"><div id="cravHistory"></div></div>
+      <div class="section-title">Statystyki miesiąca</div>
+      <div class="card"><div id="cravStats"></div></div>
+    </section>
+
+    <!-- WIĘCEJ (hub) -->
+    <section class="view" id="view-more">
+      <button class="link-card" id="portfolioBtn" style="background:linear-gradient(160deg,var(--ink),#34366B);">
+        <div class="ic">🧑‍💻</div>
+        <div><div class="tt">Moje portfolio</div><div class="ds">pawel-wasiak-portfolio.netlify.app</div></div>
+        <div class="arrow">↗</div>
+      </button>
+      <div class="section-title">Narzędzia</div>
+      <div class="card" style="padding:6px 14px;">
+        <div class="settings-item" data-goto="quotes"><div class="l">💭 Złote myśli<div class="d">Cytaty z książek i podcastów + myśl dnia</div></div><div>›</div></div>
+        <div class="settings-item" data-goto="gainloss"><div class="l">⚖️ Zyski i straty<div class="d">Co zyskuję nie pijąc, co traciłem pijąc</div></div><div>›</div></div>
+        <div class="settings-item" data-goto="reasons"><div class="l">💛 Powody i moja historia<div class="d">Dlaczego to robisz + dziennik chwil</div></div><div>›</div></div>
+        <div class="settings-item" data-goto="weekend"><div class="l">📅 Plan tygodnia<div class="d">Godzinowy plan dnia z eksportem do kalendarza</div></div><div>›</div></div>
+        <div class="settings-item" data-goto="steps"><div class="l">🪜 12 kroków AA<div class="d">Omówienie kroków + oficjalny tekst</div></div><div>›</div></div>
+        <div class="settings-item" data-goto="knowledge"><div class="l">📖 Wiedza i refleksja dnia<div class="d">Refleksje AA, harmonogram odstawienia</div></div><div>›</div></div>
+        <div class="settings-item" data-goto="you"><div class="l">🙂 Profil i ustawienia<div class="d">Trackery, kopia zapasowa</div></div><div>›</div></div>
+      </div>
+    </section>
+
+    <!-- ZŁOTE MYŚLI -->
+    <section class="view" id="view-quotes">
+      <button class="btn btn-ghost btn-sm" data-goto="more">‹ Wróć</button>
+      <div class="section-title">Złote myśli</div>
+      <div class="card">
+        <div class="field"><label>Treść myśli</label><textarea id="quoteText" placeholder="np. Najpierw nie pij, a potem idź na mityng"></textarea></div>
+        <div class="field"><label>Źródło (opcjonalnie)</label><input type="text" id="quoteSource" placeholder="np. Nie pij dziś — Ł. Tchórzewski"></div>
+        <button class="btn btn-primary btn-block" id="quoteAddBtn">+ Dodaj myśl</button>
+      </div>
+      <div id="quotesList"></div>
+    </section>
+
+    <!-- ZYSKI I STRATY -->
+    <section class="view" id="view-gainloss">
+      <button class="btn btn-ghost btn-sm" data-goto="more">‹ Wróć</button>
+      <div class="section-title">✅ Zyski z niepicia</div>
+      <div class="card">
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="gainInput" placeholder="np. Weekendy z dziećmi na trzeźwo" style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:11px 12px;font-size:14px;background:var(--surface-warm);">
+          <button class="btn btn-teal" id="gainAddBtn">+</button>
+        </div>
+        <div id="gainList" style="margin-top:12px;"></div>
+      </div>
+      <div class="section-title">❌ Straty z picia</div>
+      <div class="card">
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="lossInput" placeholder="np. Stracone pieniądze i zaufanie" style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:11px 12px;font-size:14px;background:var(--surface-warm);">
+          <button class="btn btn-danger" id="lossAddBtn">+</button>
+        </div>
+        <div id="lossList" style="margin-top:12px;"></div>
+      </div>
+      <div class="empty" style="padding-top:2px;">Wracaj do tej listy, gdy pojawia się głód — to jedna z technik z Twojej terapii 💪</div>
+    </section>
+
+    <!-- APTECZKA -->
+    <section class="view" id="view-aidkit">
+      <div class="section-title">🧰 Moja apteczka w razie głodu</div>
+      <div class="card">
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="aidInput" placeholder="Dodaj swój sposób..." style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:11px 12px;font-size:14px;background:var(--surface-warm);">
+          <button class="btn btn-primary" id="aidAddBtn">+</button>
+        </div>
+        <div id="aidList" style="margin-top:12px;"></div>
+      </div>
+      <div class="section-title">Techniki z terapii</div>
+      <div class="card"><div id="aidTechniques"></div></div>
+      <div class="disclaimer" style="margin-top:4px;"><b>Głód alkoholowy mija.</b> To objaw choroby, który pojawia się mimo niepicia — nie znaczy, że robisz coś źle. Jeśli jest bardzo silny: zadzwoń do kogoś z listy wsparcia albo do swojej poradni.</div>
+    </section>
+
+    <!-- PLAN WEEKENDU -->
+    <section class="view" id="view-weekend">
+      <button class="btn btn-ghost btn-sm" data-goto="more">‹ Wróć</button>
+      <div class="section-title">📅 Plan tygodnia</div>
+      <div class="card">
+        <div class="field" style="margin-bottom:8px;"><label>Dzień</label><input type="date" id="wkDate"></div>
+        <div class="field row2" style="margin-bottom:8px;">
+          <div><label>Godzina</label><select id="wkHour"></select></div>
+          <div><label>Kategoria</label><select id="wkCat">
+            <option value="t">🟢 Dla trzeźwości</option>
+            <option value="p">🟡 Dla przyjemności</option>
+            <option value="o">🔵 Obowiązek</option>
+          </select></div>
+        </div>
+        <div class="field" style="margin-bottom:8px;"><label>Co planujesz?</label><input type="text" id="wkActivity" placeholder="np. Mityng AA, spacer, zakupy z dziećmi"></div>
+        <button class="btn btn-primary btn-block" id="wkAddBtn">+ Dodaj do planu</button>
+      </div>
+      <div id="wkPlanList"></div>
+      <div class="card" style="background:var(--surface-warm);border:none;">
+        <h2>Wskazówki z terapii</h2>
+        <div style="font-size:13px;color:var(--ink-soft);line-height:1.6;">
+          • Planuj każdy dzień szczegółowo, żeby nie było "luk" — pusty czas sprzyja głodowi.<br>
+          • Pisz konkretnie: co, z kim, kiedy i ile czasu.<br>
+          • Codziennie uwzględnij coś <b>dla trzeźwości</b>, coś <b>dla przyjemności</b> i <b>obowiązki</b>.<br>
+          • Zachowaj równowagę — potrzebna jest i aktywność, i wypoczynek.
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 KROKÓW -->
+    <section class="view" id="view-steps">
+      <button class="btn btn-ghost btn-sm" data-goto="more">‹ Wróć</button>
+      <div class="section-title">🪜 12 kroków AA</div>
+      <div class="disclaimer">To omówienie własnymi słowami — oficjalny, pełny tekst kroków znajdziesz na stronie polskiego AA (przycisk niżej).</div>
+      <div class="card"><div id="stepsList"></div></div>
+      <button class="link-card" id="aaOfficialBtn">
+        <div class="ic">🔗</div>
+        <div><div class="tt">Oficjalny tekst 12 kroków</div><div class="ds">aa24.pl — strona Wspólnoty AA w Polsce</div></div>
+        <div class="arrow">↗</div>
+      </button>
+    </section>
+
   </main>
 
   <nav class="tabbar">
     <button data-view="today" class="active"><span class="ic">☀️</span>Dziś</button>
+    <button data-view="craving"><span class="ic">🌊</span>Głód</button>
+    <button data-view="aidkit"><span class="ic">🧰</span>Apteczka</button>
     <button data-view="progress"><span class="ic">🏆</span>Postępy</button>
-    <button data-view="reasons"><span class="ic">💛</span>Powody</button>
-    <button data-view="knowledge"><span class="ic">📖</span>Wiedza</button>
-    <button data-view="you"><span class="ic">🙂</span>Ty</button>
+    <button data-view="more"><span class="ic">☰</span>Więcej</button>
   </nav>
 </div>
 
@@ -444,7 +582,7 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
     <div class="onb-progress"><div id="onbP1"></div><div id="onbP2"></div><div id="onbP3"></div></div>
 
     <div class="onb-step active" id="onbStep1">
-      <h3>Witaj w Nowym Dniu ☀️</h3>
+      <h3>Witaj w „Nie pij dziś" ☀️</h3>
       <div class="hint">Zacznijmy od Twojego imienia i tego, co Cię motywuje.</div>
       <div class="field"><label>Jak mam się do Ciebie zwracać?</label><input type="text" id="onbName" placeholder="np. Paweł"></div>
       <div class="field"><label>Twoja główna motywacja</label>
@@ -601,6 +739,32 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
   </div>
 </div>
 
+<!-- CRAVING ENTRY MODAL -->
+<div class="overlay" id="cravOverlay">
+  <div class="sheet" style="max-height:92vh;">
+    <div class="handle"></div>
+    <h3 id="cravModalTitle">Wpis dziennika głodu</h3>
+    <div class="hint">Zaznacz to, co dziś wystąpiło. Puste = brak objawów, to też cenna informacja.</div>
+    <div class="field"><label>Siła głodu dziś (0 = brak, 5 = bardzo silny)</label>
+      <div class="mood-picker" id="cravStrength">
+        <button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
+      </div>
+    </div>
+    <div class="field"><label>🫀 Objawy fizyczne</label><div class="chip-wrap" id="cravChipsF"></div></div>
+    <div class="field"><label>💢 Emocje</label><div class="chip-wrap" id="cravChipsE"></div></div>
+    <div class="field"><label>🧠 Myślenie</label><div class="chip-wrap" id="cravChipsM"></div></div>
+    <div class="field"><label>🚶 Zachowanie</label><div class="chip-wrap" id="cravChipsZ"></div></div>
+    <div class="field"><label>⚡ Wyzwalacze (co uruchomiło głód?)</label><div class="chip-wrap" id="cravChipsW"></div>
+      <input type="text" id="cravCustomW" placeholder="+ własny wyzwalacz, Enter" style="margin-top:8px;border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;width:100%;font-size:13px;background:var(--surface-warm);"></div>
+    <div class="field"><label>🧰 Jak sobie radziłem?</label><div class="chip-wrap" id="cravChipsR"></div></div>
+    <div class="field"><label>Notatka (opcjonalnie)</label><textarea id="cravNote" placeholder="Co pomogło najbardziej? Co było najtrudniejsze?"></textarea></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="cravCancel">Anuluj</button>
+      <button class="btn btn-primary btn-block" id="cravSave">Zapisz</button>
+    </div>
+  </div>
+</div>
+
 <input type="file" id="importFileInput" accept="application/json" style="display:none;">
 <div class="toast" id="toast"></div>
 <canvas id="confetti"></canvas>
@@ -614,6 +778,38 @@ const STORE_KEY = "nowyDzien_v1";
 const EMOJIS = ["🍺","🚬","🎰","📱","🍬","☕","💊","🎮","🌿","❤️"];
 const TRIGGER_OPTIONS = ["Stres","Samotność","Konflikt","Nuda","Impreza/spotkanie","Zmęczenie","Trudne emocje","Praca","Uczelnia","Dzieci"];
 const MOTIV_LABELS = {rodzina:"Rodzina i dzieci",zdrowie:"Zdrowie",wolnosc:"Wolność i niezależność",rozwoj:"Rozwój osobisty",finanse:"Finanse",inna:"Własna droga"};
+const CRAV_F = ["Suchy kac","Suszenie w gardle","Smak/zapach alkoholu","Problemy ze snem","Brak/nadmierny apetyt","Nieuzasadnione bóle","Przemęczenie","Pocenie się","Drżenie ciała","Sny alkoholowe","Ssanie w żołądku"];
+const CRAV_E = ["Napięcie, rozdrażnienie","Bezpodstawna złość","Chwiejność emocjonalna","Niepokój / lęk","Zniecierpliwienie","Niezadowolenie","Obojętność / apatia","Smutek"];
+const CRAV_M = ["Natrętne myśli o alkoholu","Planowanie picia","Idealizowanie okresu picia","Zaprzeczanie problemom","Myśli o piciu kontrolowanym","Problemy z pamięcią/koncentracją"];
+const CRAV_Z = ["Izolowanie się","Brak planów","Zaniedbywanie obowiązków","Odkładanie pieniędzy w ukryciu","Prowokowanie konfliktów","Trudność ze znalezieniem sobie miejsca","Nieprzestrzeganie zaleceń","Szukanie sytuacji wyzwalających"];
+const CRAV_W = ["Stres","Samotność","Konflikt","Nuda","Zmęczenie","Głód (jedzenia)","Sklep / Biedronka","Wesele / impreza","Randka","Kufle, kieliszki","Piątek wieczór","Niedziela wieczór","Reklamy / bilbordy","Muzyka","Trudne emocje","Wypłata"];
+const CRAV_R = ["Negatywne obrazy z picia","Przyjemne obrazy z trzeźwości","Lista zysków i strat","Odwrócenie uwagi (opis przedmiotu)","Rozmowa ze wsparciem","Metoda 24h / krótsze odcinki","Wysiłek fizyczny / spacer","Coś przyjemnego (film, muzyka)","Relaksacja / medytacja","Jedzenie / picie (np. biała czekolada)","Zaplanowanie dnia","Unikanie wyzwalaczy","HALT (głodny-zły-samotny-zmęczony?)","Modlitwa","Mityng / grupa"];
+const DEFAULT_AIDKIT = ["Długie odosobnione spacery","Relaksacja — przenieś się myślami do miejsca, gdzie spędzałem wakacje","Beletrystyka — Sapkowski i Pilipiuk","Modlitwa","Biała czekolada","Listy"];
+const AID_TECHNIQUES = [
+  {t:"Negatywne obrazy", d:"Zamknij oczy i przypomnij sobie dokładnie jeden z najtrudniejszych momentów z okresu picia — gdzie byłeś, co czułeś, kto był obok."},
+  {t:"Przyjemne obrazy", d:"Przywołaj najprzyjemniejszy moment z okresu abstynencji, jak najdokładniej."},
+  {t:"Lista zysków i strat", d:"Otwórz zakładkę Zyski i straty — przeczytaj ją powoli, punkt po punkcie."},
+  {t:"Odwracanie uwagi", d:"Opisz w myślach jak najdokładniej dowolny przedmiot: wygląd, fakturę, materiał, kolory. Byle nie kojarzył się z piciem."},
+  {t:"Wsparcie", d:"Zadzwoń do jednej z min. 3 osób z Twojej listy wsparcia. Rozmowa naprawdę pomaga."},
+  {t:"Metoda 24h", d:"Jeśli 24h to za dużo — umów się ze sobą na 1 godzinę, potem 15 minut... aż głód minie."},
+  {t:"Ruch", d:"Wysiłek fizyczny odwraca uwagę i rozładowuje napięcie, które towarzyszy głodowi."},
+  {t:"Przyjemność i relaks", d:"Kąpiel, muzyka, odcinek serialu, książka, medytacja, trening Schultza lub Jacobsona."},
+  {t:"HALT", d:"Sprawdź: czy jesteś Głodny, Zły, Samotny albo Zmęczony? Zaopiekuj się najpierw tą potrzebą."}
+];
+const STEPS_12 = [
+  "Przyznaję, że sam nie wygrywam z alkoholem — moje życie stało się niekierowalne.",
+  "Zaczynam wierzyć, że siła większa ode mnie może przywrócić mi zdrowie.",
+  "Podejmuję decyzję, by powierzyć swoją wolę i życie opiece Siły Wyższej — jakkolwiek ją rozumiem.",
+  "Robię gruntowny i odważny obrachunek moralny z samym sobą.",
+  "Wyznaję sobie, Bogu i drugiemu człowiekowi istotę moich błędów.",
+  "Staję się gotowy, by pozwolić usunąć te wady charakteru.",
+  "Zwracam się z pokorą o usunięcie moich braków.",
+  "Robię listę osób, które skrzywdziłem, i staję się gotów zadośćuczynić im wszystkim.",
+  "Zadośćuczyniam osobiście, gdy tylko to możliwe — chyba że zraniłoby to ich lub innych.",
+  "Prowadzę nadal obrachunek osobisty i od razu przyznaję się do błędów.",
+  "Przez modlitwę i medytację staram się o lepszy kontakt z Siłą Wyższą, prosząc o poznanie Jej woli i siłę do jej spełnienia.",
+  "Przebudzony duchowo staram się nieść posłanie innym alkoholikom i stosować te zasady we wszystkich poczynaniach."
+];
 const MILESTONE_DAYS = [1,3,7,14,21,30,45,60,90,120,182,273,365,455,547,730,1095,1460,1825];
 const MILESTONE_LABELS = {1:"1 dzień",3:"3 dni",7:"1 tydzień",14:"2 tygodnie",21:"3 tygodnie",30:"1 miesiąc",45:"45 dni",60:"2 miesiące",90:"3 miesiące",120:"4 miesiące",182:"6 miesięcy",273:"9 miesięcy",365:"1 rok",455:"15 miesięcy",547:"18 miesięcy",730:"2 lata",1095:"3 lata",1460:"4 lata",1825:"5 lat"};
 
@@ -626,7 +822,13 @@ function defaultState(){
     checkins:[],
     reasons:[],
     stories:[],
-    celebratedMilestones:{}
+    celebratedMilestones:{},
+    cravings:{},
+    gains:[],
+    losses:[],
+    quotes:[],
+    weekendPlan:{},
+    aidkit:null
   };
 }
 let state = loadState();
@@ -696,12 +898,24 @@ document.querySelectorAll(".tabbar button").forEach(btn=>{
 function switchView(name){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
   document.getElementById("view-"+name).classList.add("active");
-  document.querySelectorAll(".tabbar button").forEach(b=>b.classList.toggle("active", b.dataset.view===name));
+  const tabName = ["quotes","gainloss","weekend","steps","knowledge","you","reasons"].includes(name) ? "more" : name;
+  document.querySelectorAll(".tabbar button").forEach(b=>b.classList.toggle("active", b.dataset.view===tabName));
   if(name==="progress") renderProgress();
   if(name==="reasons") renderReasons();
   if(name==="you") renderYou();
   if(name==="knowledge") renderKnowledge();
+  if(name==="craving") renderCraving();
+  if(name==="quotes") renderQuotes();
+  if(name==="gainloss") renderGainLoss();
+  if(name==="aidkit") renderAidkit();
+  if(name==="weekend") renderWeekend();
+  if(name==="steps") renderSteps();
+  window.scrollTo(0,0);
 }
+document.addEventListener("click", e=>{
+  const g = e.target.closest("[data-goto]"); if(!g) return;
+  switchView(g.dataset.goto);
+});
 
 /* ---------- RENDER: TODAY ---------- */
 const ARC_R = 98, ARC_LEN = 2*Math.PI*ARC_R;
@@ -727,6 +941,8 @@ function renderToday(){
   document.getElementById("dayCount").textContent = wholeDays;
   document.getElementById("dayUnit").textContent = wholeDays===1 ? "dzień trzeźwości" : "dni trzeźwości";
   document.getElementById("preciseTime").textContent = `+ ${hours} godz. ${mins} min`;
+  const totalH = Math.floor(days*24), totalM = Math.floor(days*1440);
+  document.getElementById("totalConv").textContent = `= ${totalH.toLocaleString("pl-PL")} godzin = ${totalM.toLocaleString("pl-PL")} minut`;
 
   const prev = prevMilestone(days), next = nextMilestone(days);
   const span = next-prev;
@@ -1030,7 +1246,7 @@ document.getElementById("exportRow").addEventListener("click", ()=>{
   const blob = new Blob([JSON.stringify(state,null,2)], {type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  a.href = url; a.download = "nowy-dzien-backup-"+todayKey()+".json";
+  a.href = url; a.download = "nie-pij-dzis-backup-"+todayKey()+".json";
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
   toast("Kopia zapasowa pobrana 💾");
@@ -1219,6 +1435,294 @@ document.getElementById("onbFinish").addEventListener("click", ()=>{
   toast("Witaj na pokładzie! 🎉");
 });
 
+/* ---------- DZIENNIK GŁODU ---------- */
+let cravSelected = {f:[],e:[],m:[],z:[],w:[],r:[]};
+let cravStrengthVal = null;
+let cravEditDate = null;
+
+function renderCraving(){
+  const dateEl = document.getElementById("cravDate");
+  if(!dateEl.value) dateEl.value = todayKey();
+  const entries = Object.entries(state.cravings).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
+  const hist = document.getElementById("cravHistory");
+  hist.innerHTML = entries.length ? entries.map(([d,c])=>{
+    const total = (c.f||[]).length+(c.e||[]).length+(c.m||[]).length+(c.z||[]).length;
+    return `<div class="checkin-item" data-crav-edit="${d}" style="cursor:pointer;">
+      <div class="mood">${c.strength>=4?"🔴":c.strength>=2?"🟠":"🟢"}</div>
+      <div class="meta">
+        <div class="d">${fmtDatePl(d)} • siła głodu: ${c.strength??"—"}/5</div>
+        <div class="tags">${total} obj. • ${(c.w||[]).length} wyzw. • ${(c.r||[]).length} sposobów radzenia</div>
+        ${c.note?`<div class="note">${escapeHtml(c.note)}</div>`:""}
+      </div>
+    </div>`;
+  }).join("") : `<div class="empty"><span class="big">🌊</span>Brak wpisów — dodaj pierwszy powyżej</div>`;
+
+  const month = todayKey().slice(0,7);
+  const monthEntries = Object.entries(state.cravings).filter(([d])=>d.startsWith(month));
+  const stats = document.getElementById("cravStats");
+  if(!monthEntries.length){ stats.innerHTML = `<div class="empty">Brak danych z tego miesiąca</div>`; }
+  else{
+    const cnt = {};
+    monthEntries.forEach(([,c])=>{ ["f","e","m","z"].forEach(k=>(c[k]||[]).forEach(x=>cnt[x]=(cnt[x]||0)+1)); });
+    const top = Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const avg = monthEntries.reduce((s,[,c])=>s+(c.strength||0),0)/monthEntries.length;
+    const max = top.length?top[0][1]:1;
+    stats.innerHTML = `<div style="font-size:13px;margin-bottom:10px;color:var(--ink-soft);">Wpisów: <b>${monthEntries.length}</b> • Średnia siła głodu: <b>${avg.toFixed(1)}/5</b></div>`+
+      (top.length?top.map(([n,c])=>`<div class="bar-row"><div class="name" style="width:130px;">${escapeHtml(n)}</div><div class="track"><div class="fill" style="width:${c/max*100}%"></div></div><div class="count">${c}</div></div>`).join(""):"");
+  }
+}
+function buildCravChips(containerId, list, key){
+  const el = document.getElementById(containerId);
+  el.innerHTML = list.map(t=>`<div class="chip ${cravSelected[key].includes(t)?"sel":""}" data-ck="${key}" data-cv="${escapeHtml(t)}">${escapeHtml(t)}</div>`).join("");
+}
+document.addEventListener("click", e=>{
+  const c = e.target.closest("[data-ck]"); if(!c) return;
+  const k=c.dataset.ck, v=c.dataset.cv;
+  if(cravSelected[k].includes(v)){ cravSelected[k]=cravSelected[k].filter(x=>x!==v); c.classList.remove("sel"); }
+  else{ cravSelected[k].push(v); c.classList.add("sel"); }
+});
+function openCravModal(dateKey){
+  cravEditDate = dateKey;
+  const existing = state.cravings[dateKey];
+  cravSelected = existing ? {f:[...(existing.f||[])],e:[...(existing.e||[])],m:[...(existing.m||[])],z:[...(existing.z||[])],w:[...(existing.w||[])],r:[...(existing.r||[])]} : {f:[],e:[],m:[],z:[],w:[],r:[]};
+  cravStrengthVal = existing ? existing.strength : null;
+  document.getElementById("cravModalTitle").textContent = "Dziennik głodu — "+fmtDatePl(dateKey);
+  document.getElementById("cravNote").value = existing?.note || "";
+  document.querySelectorAll("#cravStrength button").forEach(b=>b.classList.toggle("sel", b.dataset.v==String(cravStrengthVal)));
+  buildCravChips("cravChipsF", CRAV_F, "f");
+  buildCravChips("cravChipsE", CRAV_E, "e");
+  buildCravChips("cravChipsM", CRAV_M, "m");
+  buildCravChips("cravChipsZ", CRAV_Z, "z");
+  const customW = (existing?.w||[]).filter(x=>!CRAV_W.includes(x));
+  buildCravChips("cravChipsW", CRAV_W.concat(customW), "w");
+  buildCravChips("cravChipsR", CRAV_R, "r");
+  document.getElementById("cravOverlay").classList.add("show");
+}
+document.getElementById("cravOpenBtn").addEventListener("click", ()=>{
+  const d = document.getElementById("cravDate").value || todayKey();
+  openCravModal(d);
+});
+document.addEventListener("click", e=>{
+  const row = e.target.closest("[data-crav-edit]"); if(!row) return;
+  openCravModal(row.dataset.cravEdit);
+});
+document.getElementById("cravStrength").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  document.querySelectorAll("#cravStrength button").forEach(x=>x.classList.remove("sel"));
+  b.classList.add("sel"); cravStrengthVal = Number(b.dataset.v);
+});
+document.getElementById("cravCustomW").addEventListener("keydown", e=>{
+  if(e.key!=="Enter") return;
+  e.preventDefault();
+  const v=e.target.value.trim();
+  if(v && !cravSelected.w.includes(v)){
+    cravSelected.w.push(v);
+    const wrap=document.getElementById("cravChipsW");
+    const el=document.createElement("div"); el.className="chip sel"; el.dataset.ck="w"; el.dataset.cv=v; el.textContent=v;
+    wrap.appendChild(el);
+  }
+  e.target.value="";
+});
+document.getElementById("cravCancel").addEventListener("click", ()=>closeOverlay("cravOverlay"));
+document.getElementById("cravSave").addEventListener("click", ()=>{
+  state.cravings[cravEditDate] = {
+    strength: cravStrengthVal,
+    f:cravSelected.f, e:cravSelected.e, m:cravSelected.m, z:cravSelected.z,
+    w:cravSelected.w, r:cravSelected.r,
+    note: document.getElementById("cravNote").value.trim(),
+    ts: Date.now()
+  };
+  saveState(); closeOverlay("cravOverlay"); renderCraving(); toast("Wpis zapisany 🌊");
+});
+
+/* ---------- ZŁOTE MYŚLI ---------- */
+function renderQuotes(){
+  const list = document.getElementById("quotesList");
+  list.innerHTML = state.quotes.length ? state.quotes.slice().reverse().map(q=>`
+    <div class="reason-card"><div class="body">
+      <div class="txt" style="font-style:italic;">„${escapeHtml(q.text)}"</div>
+      <div class="row"><div class="d">${q.source?escapeHtml(q.source):""}</div><button class="del" data-qdel="${q.id}">Usuń</button></div>
+    </div></div>`).join("") : `<div class="empty"><span class="big">💭</span>Dodaj pierwszą złotą myśl — z książki, podcastu, mityngu</div>`;
+}
+document.getElementById("quoteAddBtn").addEventListener("click", ()=>{
+  const text = document.getElementById("quoteText").value.trim();
+  if(!text){ toast("Wpisz treść myśli"); return; }
+  state.quotes.push({id:uid(), text, source:document.getElementById("quoteSource").value.trim(), ts:Date.now()});
+  saveState();
+  document.getElementById("quoteText").value=""; document.getElementById("quoteSource").value="";
+  renderQuotes(); renderDailyQuote(); toast("Myśl dodana 💭");
+});
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-qdel]"); if(!b) return;
+  state.quotes = state.quotes.filter(q=>q.id!==b.dataset.qdel);
+  saveState(); renderQuotes(); renderDailyQuote();
+});
+function renderDailyQuote(){
+  const tEl = document.getElementById("dailyQuoteText");
+  const sEl = document.getElementById("dailyQuoteSource");
+  if(!state.quotes.length){
+    tEl.textContent = "Dodaj swoje złote myśli w zakładce Więcej → Złote myśli, a codziennie zobaczysz tu jedną z nich.";
+    tEl.style.fontStyle="normal"; sEl.textContent=""; return;
+  }
+  const now = new Date();
+  const dayIndex = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000);
+  const q = state.quotes[dayIndex % state.quotes.length];
+  tEl.style.fontStyle="italic";
+  tEl.textContent = "„"+q.text+"\u201D";
+  sEl.textContent = q.source ? "— "+q.source : "";
+}
+function renderDailyStep(){
+  const now = new Date();
+  const dayIndex = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000);
+  const i = dayIndex % 12;
+  document.getElementById("dailyStepNum").textContent = "Krok "+(i+1)+" z 12";
+  document.getElementById("dailyStepText").textContent = STEPS_12[i];
+}
+
+/* ---------- ZYSKI I STRATY ---------- */
+function renderGainLoss(){
+  const g = document.getElementById("gainList");
+  g.innerHTML = state.gains.length ? state.gains.map(x=>`
+    <div class="checkin-item"><div class="mood">✅</div><div class="meta"><div class="note">${escapeHtml(x.text)}</div></div><button class="del" data-gldel="g:${x.id}">✕</button></div>`).join("") : `<div class="empty">Lista pusta</div>`;
+  const l = document.getElementById("lossList");
+  l.innerHTML = state.losses.length ? state.losses.map(x=>`
+    <div class="checkin-item"><div class="mood">❌</div><div class="meta"><div class="note">${escapeHtml(x.text)}</div></div><button class="del" data-gldel="l:${x.id}">✕</button></div>`).join("") : `<div class="empty">Lista pusta</div>`;
+}
+function addGL(kind){
+  const inp = document.getElementById(kind==="g"?"gainInput":"lossInput");
+  const v = inp.value.trim(); if(!v){ toast("Wpisz treść"); return; }
+  (kind==="g"?state.gains:state.losses).push({id:uid(), text:v});
+  saveState(); inp.value=""; renderGainLoss();
+}
+document.getElementById("gainAddBtn").addEventListener("click", ()=>addGL("g"));
+document.getElementById("lossAddBtn").addEventListener("click", ()=>addGL("l"));
+document.getElementById("gainInput").addEventListener("keydown", e=>{ if(e.key==="Enter") addGL("g"); });
+document.getElementById("lossInput").addEventListener("keydown", e=>{ if(e.key==="Enter") addGL("l"); });
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-gldel]"); if(!b) return;
+  const [k,id] = b.dataset.gldel.split(":");
+  if(k==="g") state.gains = state.gains.filter(x=>x.id!==id);
+  else state.losses = state.losses.filter(x=>x.id!==id);
+  saveState(); renderGainLoss();
+});
+
+/* ---------- APTECZKA ---------- */
+function aidkitList(){
+  if(!state.aidkit) { state.aidkit = DEFAULT_AIDKIT.map(t=>({id:uid(), text:t})); saveState(); }
+  return state.aidkit;
+}
+function renderAidkit(){
+  const list = aidkitList();
+  const el = document.getElementById("aidList");
+  el.innerHTML = list.length ? list.map(x=>`
+    <div class="checkin-item"><div class="mood">🧰</div><div class="meta"><div class="note">${escapeHtml(x.text)}</div></div><button class="del" data-aiddel="${x.id}">✕</button></div>`).join("") : `<div class="empty">Lista pusta — dodaj swoje sposoby</div>`;
+  document.getElementById("aidTechniques").innerHTML = AID_TECHNIQUES.map(x=>`
+    <div class="tl-item" style="padding-left:0;"><div class="t">${x.t}</div><div class="d">${x.d}</div></div>`).join("");
+}
+document.getElementById("aidAddBtn").addEventListener("click", ()=>{
+  const inp = document.getElementById("aidInput");
+  const v = inp.value.trim(); if(!v){ toast("Wpisz treść"); return; }
+  aidkitList().push({id:uid(), text:v});
+  saveState(); inp.value=""; renderAidkit();
+});
+document.getElementById("aidInput").addEventListener("keydown", e=>{ if(e.key==="Enter") document.getElementById("aidAddBtn").click(); });
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-aiddel]"); if(!b) return;
+  state.aidkit = aidkitList().filter(x=>x.id!==b.dataset.aiddel);
+  saveState(); renderAidkit();
+});
+
+/* ---------- PLAN WEEKENDU ---------- */
+const WK_CAT = {t:"🟢", p:"🟡", o:"🔵"};
+function renderWeekend(){
+  const dateEl = document.getElementById("wkDate");
+  if(!dateEl.value) dateEl.value = todayKey();
+  const hourSel = document.getElementById("wkHour");
+  if(!hourSel.options.length){
+    for(let h=7;h<=23;h++){ const o=document.createElement("option"); o.value=String(h).padStart(2,"0")+":00"; o.textContent=o.value; hourSel.appendChild(o); }
+  }
+  renderWkList();
+}
+function renderWkList(){
+  const container = document.getElementById("wkPlanList");
+  const days = Object.entries(state.weekendPlan).sort((a,b)=>a[0].localeCompare(b[0])).filter(([d])=>d>=todayKey(new Date(Date.now()-7*86400000)));
+  container.innerHTML = days.length ? days.map(([d,items])=>{
+    const sorted = items.slice().sort((a,b)=>a.time.localeCompare(b.time));
+    return `<div class="card"><h2>${fmtDatePl(d)}</h2>${sorted.map(it=>`
+      <div class="checkin-item"><div class="mood" style="font-size:13px;">${it.time}</div>
+      <div class="meta"><div class="note">${WK_CAT[it.cat]||""} ${escapeHtml(it.activity)}</div></div>
+      <button class="del" data-wkgcal="${d}|${it.id}" style="color:var(--teal-deep);margin-right:8px;" title="Dodaj do Kalendarza Google">📆</button>
+      <button class="del" data-wkdel="${d}|${it.id}">✕</button></div>`).join("")}
+      <button class="btn btn-teal btn-block btn-sm" data-wkics="${d}" style="margin-top:10px;">📥 Eksportuj cały dzień (.ics)</button>
+    </div>`;
+  }).join("") : `<div class="empty"><span class="big">📅</span>Brak planów — dodaj pierwszy wpis powyżej</div>`;
+}
+document.getElementById("wkAddBtn").addEventListener("click", ()=>{
+  const d = document.getElementById("wkDate").value;
+  const act = document.getElementById("wkActivity").value.trim();
+  if(!d || !act){ toast("Uzupełnij dzień i aktywność"); return; }
+  if(!state.weekendPlan[d]) state.weekendPlan[d]=[];
+  state.weekendPlan[d].push({id:uid(), time:document.getElementById("wkHour").value, cat:document.getElementById("wkCat").value, activity:act});
+  saveState();
+  document.getElementById("wkActivity").value="";
+  renderWkList(); toast("Dodano do planu 📅");
+});
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-wkdel]"); if(!b) return;
+  const [d,id] = b.dataset.wkdel.split("|");
+  state.weekendPlan[d] = (state.weekendPlan[d]||[]).filter(x=>x.id!==id);
+  if(!state.weekendPlan[d].length) delete state.weekendPlan[d];
+  saveState(); renderWkList();
+});
+
+/* Eksport do kalendarza */
+function wkTimes(dateKey, timeStr){
+  const start = dateKey.replace(/-/g,"") + "T" + timeStr.replace(":","") + "00";
+  const [h,m] = timeStr.split(":").map(Number);
+  const endH = Math.min(h+1, 23);
+  const end = dateKey.replace(/-/g,"") + "T" + String(endH).padStart(2,"0") + String(m).padStart(2,"0") + "00";
+  return [start, end];
+}
+document.addEventListener("click", e=>{
+  const g = e.target.closest("[data-wkgcal]"); if(!g) return;
+  const [d,id] = g.dataset.wkgcal.split("|");
+  const it = (state.weekendPlan[d]||[]).find(x=>x.id===id); if(!it) return;
+  const [start,end] = wkTimes(d, it.time);
+  const url = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+    + "&text=" + encodeURIComponent(it.activity)
+    + "&dates=" + start + "/" + end
+    + "&details=" + encodeURIComponent("Plan tygodnia — apka Nie pij dziś");
+  window.open(url, "_blank", "noopener");
+});
+function icsEscape(s){ return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n"); }
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-wkics]"); if(!b) return;
+  const d = b.dataset.wkics;
+  const items = (state.weekendPlan[d]||[]).slice().sort((a,b2)=>a.time.localeCompare(b2.time));
+  if(!items.length) return;
+  const stamp = new Date().toISOString().replace(/[-:]/g,"").split(".")[0]+"Z";
+  const events = items.map(it=>{
+    const [start,end] = wkTimes(d, it.time);
+    return ["BEGIN:VEVENT","UID:"+it.id+"@nie-pij-dzis","DTSTAMP:"+stamp,"DTSTART:"+start,"DTEND:"+end,"SUMMARY:"+icsEscape(it.activity),"DESCRIPTION:Plan tygodnia — apka Nie pij dziś","END:VEVENT"].join("\r\n");
+  }).join("\r\n");
+  const ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//NiePijDzis//PL","CALSCALE:GREGORIAN",events,"END:VCALENDAR"].join("\r\n");
+  const blob = new Blob([ics], {type:"text/calendar;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "plan-"+d+".ics";
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast("Pobrano plik .ics — otwórz go, aby dodać do kalendarza 📆");
+});
+
+/* ---------- 12 KROKÓW ---------- */
+function renderSteps(){
+  document.getElementById("stepsList").innerHTML = STEPS_12.map((s,i)=>`
+    <div class="tl-item" style="padding-left:0;"><div class="t">Krok ${i+1}</div><div class="d">${s}</div></div>`).join("");
+}
+document.getElementById("aaOfficialBtn").addEventListener("click", ()=>window.open("https://aa24.pl/pl/12-krokow-aa","_blank","noopener"));
+document.getElementById("portfolioBtn").addEventListener("click", ()=>window.open("https://pawel-wasiak-portfolio.netlify.app/","_blank","noopener"));
+
 /* ---------- CONFETTI ---------- */
 function fireConfetti(){
   const canvas = document.getElementById("confetti");
@@ -1254,10 +1758,13 @@ function fireConfetti(){
 function fullRender(){
   renderHeader();
   renderToday();
+  renderDailyQuote();
+  renderDailyStep();
   renderProgress();
   renderReasons();
   renderKnowledge();
   renderYou();
+  renderCraving();
 }
 
 /* ---------- BOOT ---------- */
