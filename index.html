@@ -293,9 +293,53 @@ main#views{flex:1;padding:4px 16px calc(96px + env(safe-area-inset-bottom,0px));
 @media (prefers-reduced-motion:reduce){
   .view,.sheet,.toast{animation:none!important;transition:none!important;}
 }
+
+/* --- Przycisk wsparcia (Suppi) — zawsze widoczny --- */
+.coffee-fab {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  right: 16px;
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  background: var(--orange-deep, #E6431F);
+  color: #FFF7EC;
+  text-decoration: none;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 16px;
+  border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.coffee-fab:hover, .coffee-fab:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 9px 20px rgba(0,0,0,0.34);
+}
+.coffee-fab .coffee-icon { font-size: 16px; line-height: 1; }
+@media (max-width: 480px) {
+  .coffee-fab {
+    right: 12px;
+    bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+@media (min-width: 900px) {
+  .coffee-fab { right: 24px; bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
+}
 </style>
 </head>
 <body>
+
+<!-- ============ PRZYCISK WSPARCIA — zawsze widoczny ============ -->
+<a class="coffee-fab" href="https://suppi.pl/pawelwasiak" target="_blank" rel="noopener" title="Postaw mi kawę na Suppi">
+<span class="coffee-icon">☕</span>
+<span class="coffee-label">Postaw kawę</span>
+</a>
+
 <div id="app">
 
   <header class="topbar">
